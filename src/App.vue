@@ -2,6 +2,7 @@
   <list-select
     v-model:selected="selected"
     :options="options"
+    :select-all-option="true"
   />
   <p>Selected ids: {{ selected }}</p>
 </template>

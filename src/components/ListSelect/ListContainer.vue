@@ -3,9 +3,15 @@
     class="list-container"
     :class="{ 'fixed-height': !dynamicSize }"
   >
+    <list-item
+      v-if="selectAllOption"
+      title="Select all"
+      :checked="allSelected"
+      @input="handleListItemChange($event, '')"
+    />
     <list-item 
-      v-for="(option, id) in options"
-      :key="id"
+      v-for="(option, key) in options"
+      :key="key"
       :checked="option.checked"
       :title="option.label"
       @input="handleListItemChange($event, option.id)"
@@ -30,11 +36,23 @@
       },
       options: {
         type: Array as PropType<Array<OptionInternal>>,
-        default: []
+        default: [],
+        validator: (value: Array<OptionInternal>) => {
+          return value.filter(x => x.id.length === 0).length === 0
+        }
+      },
+      selectAllOption: {
+        type: Boolean,
+        default: false
+      }
+    },
+    computed: {
+      allSelected () : boolean {
+        return !this.options.some(x => !x.checked)
       }
     },
     methods: {
-      handleListItemChange (e: Event, id: string) {
+      handleListItemChange (e: Event, id: string) : void {
         const target = <HTMLInputElement>e.target
         this.$emit('list-change', <ListChangeEvent>{
           id: id,

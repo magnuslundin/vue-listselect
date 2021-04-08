@@ -3,6 +3,7 @@
     <list-container
       :dynamic-size="dynamicSize"
       :options="filteredOptions"
+      :select-all-option="selectAllOption"
       @list-change="handleListChange($event)"
     />
     <list-control
@@ -37,6 +38,10 @@
       options: {
         type: Array as PropType<Array<Option>>,
         default: []
+      },
+      selectAllOption: {
+        type: Boolean,
+        default: false
       }
     },
     computed: {
@@ -56,12 +61,12 @@
       }
     },
     methods: {
-      handleListChange (e: ListChangeEvent) {
-        if (e.checked) {
-          this.$emit('update:selected', [...this.selected, e.id])
-        } else {
-          this.$emit('update:selected', this.selected.filter(x => x !== e.id))
+      handleListChange (e: ListChangeEvent) : void {
+        if (e.id === '') {
+          this.$emit('update:selected', e.checked ? this.filteredOptions.map(x => x.id) : [])
+          return
         }
+        this.$emit('update:selected', e.checked ? [...this.selected, e.id] : this.selected.filter(x => x !== e.id))
       },
       handleListControlRemoval (id: string) {
         this.$emit('update:selected', this.selected.filter(x => x !== id))
